@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scribble/views/create_room_page.dart';
 import 'package:scribble/views/home_page.dart';
 import 'package:scribble/views/join_room_page.dart';
+import 'package:scribble/views/paint_page.dart';
 
 import 'constants.dart';
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
           ThemeData.light().copyWith(scaffoldBackgroundColor: backgroundColor),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: CreateRoomPage(),
+        body: HomePage(),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scribble/views/paint_page.dart';
 import 'package:scribble/views/widgets/custom_button.dart';
 import 'package:scribble/views/widgets/custom_text_field.dart';
 
@@ -16,8 +17,25 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
 
   TextEditingController _roomNameController = TextEditingController();
 
-  int? _selectedPlayerCount;
-  int? _roundsCount;
+  String? _selectedPlayerCount;
+  String? _roundsCount;
+
+  void createRoom() {
+    if (_nameController.text.isNotEmpty &&
+        _roomNameController.text.isNotEmpty &&
+        _roundsCount != null &&
+        _selectedPlayerCount != null) {
+      Map data = {
+        "nickname": _nameController.text,
+        "name": _roomNameController.text,
+        "occupancy": _selectedPlayerCount,
+        "maxRounds": _roundsCount
+      };
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              PaintPage(data: data, screenFrom: 'createRoom')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +45,6 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
         backgroundColor: backgroundColor,
         leading: Row(
           children: [
-            const SizedBox(
-              width: 15,
-            ),
             BackButton(
               color: secondaryColor,
               onPressed: () {
@@ -55,7 +70,9 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+              const SizedBox(
+                height: 25,
+              ),
               CustomTextField(
                   controller: _nameController, hintText: "Enter Your Name"),
               const SizedBox(
@@ -68,8 +85,8 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                 height: 20,
               ),
               Container(
-                width: MediaQuery.of(context).size.width / 2.5,
-                child: DropdownButtonFormField<int>(
+                width: MediaQuery.of(context).size.width / 2,
+                child: DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -90,14 +107,14 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                         color: Colors.blue),
                   ),
                   dropdownColor: Colors.white,
-                  items: <int>[2, 3, 4, 5, 6]
-                      .map<DropdownMenuItem<int>>((int value) {
-                    return DropdownMenuItem<int>(
+                  items: <String>['2', '3', '4', '5', '6']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
                       value: value,
-                      child: Text("$value"),
+                      child: Text(value),
                     );
                   }).toList(),
-                  onChanged: (int? newValue) {
+                  onChanged: (String? newValue) {
                     setState(() {
                       _selectedPlayerCount = newValue;
                     });
@@ -107,8 +124,8 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
               ),
               const SizedBox(height: 20),
               Container(
-                width: MediaQuery.of(context).size.width / 2.5,
-                child: DropdownButtonFormField<int>(
+                width: MediaQuery.of(context).size.width / 2,
+                child: DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -129,14 +146,14 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                         color: Colors.blue),
                   ),
                   dropdownColor: Colors.white,
-                  items: <int>[1, 2, 3, 4, 5, 6, 7, 8]
-                      .map<DropdownMenuItem<int>>((int value) {
-                    return DropdownMenuItem<int>(
+                  items: <String>['1', '2', '3', '4', '5', '6', '7', '8']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
                       value: value,
-                      child: Text("$value"),
+                      child: Text(value),
                     );
                   }).toList(),
-                  onChanged: (int? newValue) {
+                  onChanged: (String? newValue) {
                     setState(() {
                       _roundsCount = newValue!;
                     });
@@ -148,7 +165,10 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                 height: 40,
               ),
               CustomButton(
-                  text: "Create", onTap: () {}, icon: Icons.add, factor: 2),
+                  text: "Create",
+                  onTap: createRoom,
+                  icon: Icons.add,
+                  factor: 2),
             ],
           ),
         ),
