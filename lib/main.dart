@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
           ThemeData.light().copyWith(scaffoldBackgroundColor: backgroundColor),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: HomePage(),
+        body: CreateRoomPage(),
       ),
     );
   }
