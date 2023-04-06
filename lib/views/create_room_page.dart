@@ -25,11 +25,11 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
         _roomNameController.text.isNotEmpty &&
         _roundsCount != null &&
         _selectedPlayerCount != null) {
-      Map data = {
+      Map<String,String> data = {
         "nickname": _nameController.text,
         "name": _roomNameController.text,
-        "occupancy": _selectedPlayerCount,
-        "maxRounds": _roundsCount
+        "occupancy": _selectedPlayerCount!,
+        "maxRounds": _roundsCount!
       };
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>

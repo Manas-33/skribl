@@ -1,13 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:scribble/views/paint_page.dart';
 import 'package:scribble/views/widgets/custom_button.dart';
 import 'package:scribble/views/widgets/custom_text_field.dart';
 
 import '../constants.dart';
 
-class JoinRoomPage extends StatelessWidget {
+class JoinRoomPage extends StatefulWidget {
   JoinRoomPage({super.key});
+
+  @override
+  State<JoinRoomPage> createState() => _JoinRoomPageState();
+}
+
+class _JoinRoomPageState extends State<JoinRoomPage> {
   TextEditingController _nameController = TextEditingController();
+
   TextEditingController _roomNameController = TextEditingController();
+
+  void joinRoom() {
+    if (_nameController.text.isNotEmpty &&
+        _roomNameController.text.isNotEmpty) {
+      Map<String,String> data = {
+        "nickname": _nameController.text,
+        "name": _roomNameController.text,
+      };
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PaintPage(data: data, screenFrom: "joinRoom")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +77,7 @@ class JoinRoomPage extends StatelessWidget {
               ),
               CustomButton(
                   text: "Join",
-                  onTap: () {},
+                  onTap: joinRoom,
                   icon: Icons.person_add,
                   factor: 2),
             ],
