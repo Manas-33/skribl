@@ -89,7 +89,34 @@ io.on('connection',(socket)=>{
     //white board sockets
     socket.on('paint',({details,roomName})=>{
         io.to(roomName).emit('points',{details:details});
-    })
+    });
+
+    //Color changer socket
+    socket.on('color-change',({color,roomName})=>{
+        io.to(roomName).emit('color-change',color);
+    });
+
+    //stroke width socket
+    socket.on('stroke-width',({value,roomName})=>{
+        io.to(roomName).emit('stroke-width',value);
+    });
+
+    //clean screen socket
+    socket.on('clean-screen',(roomName)=>{
+        io.to(roomName).emit('clean-screen','');
+    });
+
+    //message socket
+    socket.on('msg',async(data)=>{
+        try {
+            io.to(data.roomName).emit('msg',{
+                username:data.username,
+                msg:data.msg
+            });
+        } catch (error) {
+            console.log(error.toString());
+        }
+    });
 });
 
 //listen
