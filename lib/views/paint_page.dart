@@ -1,10 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:scribble/constants.dart';
 import 'package:scribble/models/touch_points.dart';
-import 'package:scribble/views/widgets/custom_text_field.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 import '../models/custom_painter.dart';
 
 class PaintPage extends StatefulWidget {
@@ -33,10 +32,31 @@ class _PaintPageState extends State<PaintPage> {
   ScrollController _scrollController = ScrollController();
   List<Map> messages = [];
   TextEditingController _controller = TextEditingController();
+  int guessedUserCtr = 0;
+  int _start = 60;
+  late Timer _timer;
+
   @override
   void initState() {
     super.initState();
     connect();
+  }
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    _timer =  Timer.periodic(oneSec, (Timer time) {
+      if (_start == 0) {
+        _socket.emit('change-turn', dataOfRoom['name']);
+        setState(() {
+          _timer.cancel();
+        });
+      } else {
+        setState(() {
+          print("sub");
+          _start--;
+        });
+      }
+    });
   }
 
   void renderTextBlank(String text) {
@@ -49,7 +69,7 @@ class _PaintPageState extends State<PaintPage> {
 
   // Socket.io client connection
   void connect() {
-    _socket = IO.io('http://192.168.1.7:3000', <String, dynamic>{
+    _socket = IO.io('http://192.168.1.4:3000', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false
     });
@@ -71,7 +91,7 @@ class _PaintPageState extends State<PaintPage> {
           dataOfRoom = roomData;
         });
         if (roomData['isJoin'] != true) {
-          //start tier
+          startTimer();
         }
       });
 
@@ -114,11 +134,41 @@ class _PaintPageState extends State<PaintPage> {
     _socket.on('msg', (msgData) {
       setState(() {
         messages.add(msgData);
+        guessedUserCtr = msgData['guessedUserCtr'];
       });
+      if (guessedUserCtr == dataOfRoom['players'].length - 1) {
+        _socket.emit('change-turn', dataOfRoom['name']);
+      }
       _scrollController.animateTo(
           _scrollController.position.maxScrollExtent + 200,
           duration: Duration(milliseconds: 200),
           curve: Curves.easeInOut);
+    });
+
+    _socket.on('change-turn', (data) {
+      String oldWord = dataOfRoom['word'];
+      showDialog(
+          context: context,
+          builder: (context) {
+            Future.delayed(Duration(seconds: 3), () {
+              setState(() {
+                dataOfRoom = data;
+                renderTextBlank(data['word']);
+                guessedUserCtr = 0;
+                _start = 60;
+                points.clear();
+              });
+              Navigator.of(context).pop();
+              _timer.cancel();
+              print("new timer started");
+              startTimer();
+            });
+            return AlertDialog(
+              title: Center(
+                child: Text("The word was $oldWord"),
+              ),
+            );
+          });
     });
   }
 
@@ -211,8 +261,7 @@ class _PaintPageState extends State<PaintPage> {
                               child: RepaintBoundary(
                                 child: CustomPaint(
                                   size: Size.infinite,
-                                  painter:
-                                      MyCustomPainter(pointsList: points),
+                                  painter: MyCustomPainter(pointsList: points),
                                 ),
                               ),
                             ),
@@ -258,10 +307,10 @@ class _PaintPageState extends State<PaintPage> {
                               )),
                         ],
                       ),
-                      Row(
+                      dataOfRoom['turn']['nickname']!=widget.data['nickname']? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: textBlankWidget,
-                      ),
+                      ):Center(child:Text(dataOfRoom['word'],style: TextStyle(fontSize: 30, color: Colors.white))),
                       Container(
                         height: size.height * .3,
                         child: ListView.builder(
@@ -300,7 +349,7 @@ class _PaintPageState extends State<PaintPage> {
                   ),
                 ],
               ),
-              Align(
+              dataOfRoom['turn']['nickname']!=widget.data['nickname']? Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
                     width: size.width,
@@ -317,6 +366,9 @@ class _PaintPageState extends State<PaintPage> {
                             'msg': value.trim(),
                             'word': dataOfRoom['word'],
                             'roomName': widget.data['name'],
+                            'guessedUserCtr': guessedUserCtr,
+                            'totalTime': 60,
+                            'timeTaken': 60 - _start,
                           };
                           _socket.emit('msg', map);
                           _controller.clear();
@@ -344,8 +396,20 @@ class _PaintPageState extends State<PaintPage> {
                             color: Colors.blue),
                       ),
                     )),
-              )
+              ):Container()
             ],
+          ),
+        ),
+      ),
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(bottom: 30),
+        child: FloatingActionButton(
+          onPressed: () {},
+          elevation: 7,
+          backgroundColor: Colors.white,
+          child: Text(
+            '$_start',
+            style: TextStyle(fontSize: 22, color: Colors.black),
           ),
         ),
       ),

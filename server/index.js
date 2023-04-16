@@ -85,6 +85,61 @@ io.on('connection',(socket)=>{
             console.log(error);
         }
     });
+    //message socket
+    socket.on('msg',async(data)=>{
+        console.log(data);
+        try {
+            //if player enters correct word
+            if(data.msg === data.word){
+                let room = await Room.find({name:data.roomName});
+                let userPlayer = room[0].players.filter(
+                    (player) => player.nickname === data.username
+                )
+                //adding points
+                if(data.timeTaken !== 0){
+                    userPlayer[0].points += Math.round( ( 200 / data.timeTaken ) * 10 );
+                }
+                room = await room[0].save();
+                io.to(data.roomName).emit('msg',{
+                    username: data.username,
+                    msg: 'Guessed-It',
+                    guessedUserCtr: data.guessedUserCt + 1 ,
+                });
+            }else{
+                io.to(data.roomName).emit('msg',{
+                    username: data.username,
+                    msg: data.msg,
+                    guessedUserCtr: data.guessedUserCtr
+                });
+            }
+        } catch (error) {
+            console.log(error.toString());
+        }
+    });
+
+    //change turn socket
+    socket.on('change-turn',async(name)=>{
+        try {
+            let room = await Room.findOne({name});
+            let idx = room.turnIndex;
+            if(idx+1 === room.players.length){
+                room.currentRound+=1;
+            }
+            if(room.currentRound <= room.maxRounds){
+                const word = getWord();
+                room.word = word;
+                room.turnIndex = (idx+1) % room.players.length;
+                room.turn = room.players[room.turnIndex];
+                room = await room.save();
+                io.to(name).emit('change-turn',room);
+            }else{
+                //showing the leaderboard after all the round are over
+                //leaderboard functionality
+            }
+        } catch (error) {
+            console.log(error.toString());
+        }
+    });
 
     //white board sockets
     socket.on('paint',({details,roomName})=>{
@@ -105,18 +160,7 @@ io.on('connection',(socket)=>{
     socket.on('clean-screen',(roomName)=>{
         io.to(roomName).emit('clean-screen','');
     });
-
-    //message socket
-    socket.on('msg',async(data)=>{
-        try {
-            io.to(data.roomName).emit('msg',{
-                username:data.username,
-                msg:data.msg
-            });
-        } catch (error) {
-            console.log(error.toString());
-        }
-    });
+    
 });
 
 //listen
