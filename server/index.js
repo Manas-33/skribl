@@ -105,6 +105,7 @@ io.on('connection',(socket)=>{
                     msg: 'Guessed-It',
                     guessedUserCtr: data.guessedUserCt + 1 ,
                 });
+                socket.emit('closeInput', "");
             }else{
                 io.to(data.roomName).emit('msg',{
                     username: data.username,
@@ -159,6 +160,16 @@ io.on('connection',(socket)=>{
     //clean screen socket
     socket.on('clean-screen',(roomName)=>{
         io.to(roomName).emit('clean-screen','');
+    });
+
+    //update score socket
+    socket.on('updateScore', async (name) => {
+        try {
+            const room = await Room.findOne({name});
+            io.to(name).emit('updateScore',room);
+        } catch (error) {
+            console.log(error.toString());
+        }
     });
     
 });

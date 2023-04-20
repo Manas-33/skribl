@@ -4,6 +4,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:scribble/constants.dart';
 import 'package:scribble/models/touch_points.dart';
 import 'package:scribble/views/waiting_lobby_page.dart';
+import 'package:scribble/views/widgets/player_score_drawer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../models/custom_painter.dart';
 
@@ -36,6 +37,9 @@ class _PaintPageState extends State<PaintPage> {
   int guessedUserCtr = 0;
   int _start = 60;
   late Timer _timer;
+  var scaffoldKey = GlobalKey<ScaffoldState>();
+  List<Map> scoreboard = [];
+  bool isTextInputReadOnly = false;
 
   @override
   void initState() {
@@ -93,6 +97,15 @@ class _PaintPageState extends State<PaintPage> {
         });
         if (roomData['isJoin'] != true) {
           startTimer();
+        }
+        scoreboard.clear();
+        for (int i = 0; i < roomData['players'].length; i++) {
+          setState(() {
+            scoreboard.add({
+              'username': roomData['players'][i]['nickname'],
+              'points': roomData['players'][i]['points'].toString()
+            });
+          });
         }
       });
 
@@ -155,6 +168,7 @@ class _PaintPageState extends State<PaintPage> {
               setState(() {
                 dataOfRoom = data;
                 renderTextBlank(data['word']);
+                isTextInputReadOnly = false;
                 guessedUserCtr = 0;
                 _start = 60;
                 points.clear();
@@ -170,6 +184,25 @@ class _PaintPageState extends State<PaintPage> {
               ),
             );
           });
+    });
+
+    _socket.on('closeInput', (_) {
+      _socket.emit('updateScore', widget.data['name']);
+      setState(() {
+        isTextInputReadOnly = true;
+      });
+    });
+
+    _socket.on('updateScore', (roomData) {
+      scoreboard.clear();
+      for (int i = 0; i < roomData['players'].length; i++) {
+        setState(() {
+          scoreboard.add({
+            'username': roomData['players'][i]['nickname'],
+            'points': roomData['players'][i]['points'].toString()
+          });
+        });
+      }
     });
   }
 
@@ -213,6 +246,10 @@ class _PaintPageState extends State<PaintPage> {
     }
 
     return Scaffold(
+      key: scaffoldKey,
+      drawer: PlayerDrawer(
+        userData: scoreboard,
+      ),
       body: dataOfRoom != null
           ? dataOfRoom['isJoin'] != true
               ? Container(
@@ -364,6 +401,14 @@ class _PaintPageState extends State<PaintPage> {
                                 )
                               ],
                             ),
+                            SafeArea(
+                                child: IconButton(
+                              icon: Icon(Icons.menu_rounded,
+                                  color: Colors.blue, size: 30),
+                              onPressed: () => {
+                                scaffoldKey.currentState!.openDrawer(),
+                              },
+                            )),
                           ],
                         ),
                         dataOfRoom['turn']['nickname'] !=
@@ -376,6 +421,7 @@ class _PaintPageState extends State<PaintPage> {
                                     margin:
                                         EdgeInsets.symmetric(horizontal: 20),
                                     child: TextField(
+                                      readOnly: isTextInputReadOnly,
                                       controller: _controller,
                                       autocorrect: false,
                                       textInputAction: TextInputAction.done,
@@ -420,7 +466,7 @@ class _PaintPageState extends State<PaintPage> {
                                       ),
                                     )),
                               )
-                            : Container()
+                            : Container(),
                       ],
                     ),
                   ),
