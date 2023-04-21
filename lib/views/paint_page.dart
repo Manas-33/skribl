@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:scribble/constants.dart';
+import 'package:scribble/models/drawing_point.dart';
 import 'package:scribble/models/touch_points.dart';
 import 'package:scribble/views/home_page.dart';
 import 'package:scribble/views/waiting_lobby_page.dart';
@@ -27,7 +28,7 @@ class PaintPage extends StatefulWidget {
 class _PaintPageState extends State<PaintPage> {
   late IO.Socket _socket;
   Map dataOfRoom = {};
-  List<TouchPoints> points = [];
+  List<DrawingPoint?> points = [];
   StrokeCap strokeType = StrokeCap.round;
   Color selectedColor = Colors.red;
   double opacity = 1;
@@ -117,14 +118,18 @@ class _PaintPageState extends State<PaintPage> {
       _socket.on('points', (point) {
         if (point['details'] != null) {
           setState(() {
-            points.add(TouchPoints(
-                points: Offset((point['details']['dx']).toDouble(),
+            points.add(DrawingPoint(
+                Offset((point['details']['dx']).toDouble(),
                     (point['details']['dy']).toDouble()),
-                paint: Paint()
+                Paint()
                   ..strokeCap = strokeType
                   ..isAntiAlias = true
                   ..color = selectedColor.withOpacity(opacity)
                   ..strokeWidth = strokeWidth));
+          });
+        } else {
+          setState(() {
+            points.add(null);
           });
         }
       });
