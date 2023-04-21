@@ -175,7 +175,6 @@ class _PaintPageState extends State<PaintPage> {
               });
               Navigator.of(context).pop();
               _timer.cancel();
-              print("new timer started");
               startTimer();
             });
             return AlertDialog(
