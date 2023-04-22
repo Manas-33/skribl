@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:scribble/models/drawing_point.dart';
 import 'dart:ui' as ui;
 
-import 'package:scribble/models/touch_points.dart';
-
 class MyCustomPainter extends CustomPainter {
   List<DrawingPoint?> pointsList;
   MyCustomPainter({required this.pointsList});

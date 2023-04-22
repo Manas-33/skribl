@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:scribble/constants.dart';
 import 'package:scribble/models/drawing_point.dart';
-import 'package:scribble/models/touch_points.dart';
 import 'package:scribble/views/home_page.dart';
 import 'package:scribble/views/waiting_lobby_page.dart';
 import 'package:scribble/views/widgets/player_score_drawer.dart';
@@ -63,7 +61,6 @@ class _PaintPageState extends State<PaintPage> {
         });
       } else {
         setState(() {
-          print("sub");
           _start--;
         });
       }
@@ -74,7 +71,7 @@ class _PaintPageState extends State<PaintPage> {
     textBlankWidget.clear();
     for (int i = 0; i < text.length; i++) {
       textBlankWidget
-          .add(Text('_', style: TextStyle(fontSize: 30, color: Colors.white)));
+          .add(const Text('_', style:  TextStyle(fontSize: 30, color: Colors.white)));
     }
   }
 
@@ -165,7 +162,7 @@ class _PaintPageState extends State<PaintPage> {
       }
       _scrollController.animateTo(
           _scrollController.position.maxScrollExtent + 200,
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut);
     });
 
@@ -174,7 +171,7 @@ class _PaintPageState extends State<PaintPage> {
       showDialog(
           context: context,
           builder: (context) {
-            Future.delayed(Duration(seconds: 3), () {
+            Future.delayed(const Duration(seconds: 3), () {
               setState(() {
                 dataOfRoom = data;
                 renderTextBlank(data['word']);
@@ -268,7 +265,7 @@ class _PaintPageState extends State<PaintPage> {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text("Choose a color"),
+                title: const Text("Choose a color"),
                 content: SingleChildScrollView(
                   child: BlockPicker(
                       pickerColor: selectedColor,
@@ -290,7 +287,7 @@ class _PaintPageState extends State<PaintPage> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text(
+                    child: const Text(
                       "Close",
                       style: TextStyle(fontSize: 16),
                     ),
@@ -322,57 +319,78 @@ class _PaintPageState extends State<PaintPage> {
                                     Container(
                                       width: size.width,
                                       height: size.height * 0.55,
-                                      child: GestureDetector(
-                                        onPanUpdate: (details) {
-                                          print(details.localPosition.dx);
-                                          _socket.emit('paint', {
-                                            'details': {
-                                              'dx': details.localPosition.dx,
-                                              'dy': details.localPosition.dy,
-                                            },
-                                            'roomName': widget.data['name'],
-                                          });
-                                        },
-                                        onPanStart: (details) {
-                                          print(details.localPosition.dx);
-                                          _socket.emit('paint', {
-                                            'details': {
-                                              'dx': details.localPosition.dx,
-                                              'dy': details.localPosition.dy,
-                                            },
-                                            'roomName': widget.data['name'],
-                                          });
-                                        },
-                                        onPanEnd: (details) {
-                                          _socket.emit('paint', {
-                                            'details': null,
-                                            'roomName': widget.data['name'],
-                                          });
-                                        },
-                                        child: SizedBox.expand(
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20)),
-                                            child: RepaintBoundary(
-                                              child: CustomPaint(
-                                                size: Size.infinite,
-                                                painter: MyCustomPainter(
-                                                    pointsList: points),
+                                      child: dataOfRoom['turn']?['nickname'] ==
+                                              widget.data['nickname']
+                                          ? GestureDetector(
+                                              onPanUpdate: (details) {
+                                                _socket.emit('paint', {
+                                                  'details': {
+                                                    'dx': details
+                                                        .localPosition.dx,
+                                                    'dy': details
+                                                        .localPosition.dy,
+                                                  },
+                                                  'roomName':
+                                                      widget.data['name'],
+                                                });
+                                              },
+                                              onPanStart: (details) {
+                                                _socket.emit('paint', {
+                                                  'details': {
+                                                    'dx': details
+                                                        .localPosition.dx,
+                                                    'dy': details
+                                                        .localPosition.dy,
+                                                  },
+                                                  'roomName':
+                                                      widget.data['name'],
+                                                });
+                                              },
+                                              onPanEnd: (details) {
+                                                _socket.emit('paint', {
+                                                  'details': null,
+                                                  'roomName':
+                                                      widget.data['name'],
+                                                });
+                                              },
+                                              child: SizedBox.expand(
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                    const  BorderRadius.all(
+                                                          Radius.circular(20)),
+                                                  child: RepaintBoundary(
+                                                    child: CustomPaint(
+                                                      size: Size.infinite,
+                                                      painter: MyCustomPainter(
+                                                          pointsList: points),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : SizedBox.expand(
+                                              child: ClipRRect(
+                                                borderRadius: const BorderRadius.all(
+                                                    Radius.circular(20)),
+                                                child: RepaintBoundary(
+                                                  child: CustomPaint(
+                                                    size: Size.infinite,
+                                                    painter: MyCustomPainter(
+                                                        pointsList: points),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      ),
                                     ),
                                     const SizedBox(
                                       height: 7,
                                     ),
-                                    dataOfRoom['turn']['nickname'] ==
+                                    dataOfRoom['turn']?['nickname'] ==
                                             widget.data['nickname']
                                         ? Row(
                                             children: [
                                               IconButton(
-                                                icon: Icon(
+                                                icon:const Icon(
                                                   Icons.color_lens,
                                                   color: Colors.white,
                                                 ),
@@ -402,7 +420,7 @@ class _PaintPageState extends State<PaintPage> {
                                                     _socket.emit('clean-screen',
                                                         dataOfRoom['name']);
                                                   },
-                                                  icon: Icon(
+                                                  icon: const Icon(
                                                     Icons
                                                         .cleaning_services_rounded,
                                                     color: Colors.white,
@@ -410,7 +428,7 @@ class _PaintPageState extends State<PaintPage> {
                                             ],
                                           )
                                         : Container(),
-                                    dataOfRoom['turn']['nickname'] !=
+                                    dataOfRoom['turn']?['nickname'] !=
                                             widget.data['nickname']
                                         ? Row(
                                             mainAxisAlignment:
@@ -419,7 +437,7 @@ class _PaintPageState extends State<PaintPage> {
                                           )
                                         : Center(
                                             child: Text(dataOfRoom['word'],
-                                                style: TextStyle(
+                                                style:const TextStyle(
                                                     fontSize: 30,
                                                     color: Colors.white))),
                                     Container(
@@ -434,7 +452,7 @@ class _PaintPageState extends State<PaintPage> {
                                           return ListTile(
                                             title: Text(
                                               msg.elementAt(0),
-                                              style: TextStyle(
+                                              style:const TextStyle(
                                                   color: Colors.yellow,
                                                   fontSize: 19,
                                                   fontWeight: FontWeight.w600),
@@ -447,7 +465,7 @@ class _PaintPageState extends State<PaintPage> {
                                                 //   height: 3,
                                                 // ),
                                                 Text(msg.elementAt(1),
-                                                    style: TextStyle(
+                                                    style:const TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 16,
                                                     )),
@@ -461,7 +479,7 @@ class _PaintPageState extends State<PaintPage> {
                                 ),
                                 SafeArea(
                                     child: IconButton(
-                                  icon: Icon(Icons.menu_rounded,
+                                  icon:const Icon(Icons.menu_rounded,
                                       color: Colors.blue, size: 30),
                                   onPressed: () => {
                                     scaffoldKey.currentState!.openDrawer(),
@@ -469,7 +487,7 @@ class _PaintPageState extends State<PaintPage> {
                                 )),
                               ],
                             ),
-                            dataOfRoom['turn']['nickname'] !=
+                            dataOfRoom['turn']?['nickname'] !=
                                     widget.data['nickname']
                                 ? Align(
                                     alignment: Alignment.bottomCenter,
@@ -477,7 +495,7 @@ class _PaintPageState extends State<PaintPage> {
                                         width: size.width,
                                         padding:
                                             const EdgeInsets.only(bottom: 10),
-                                        margin: EdgeInsets.symmetric(
+                                        margin:const EdgeInsets.symmetric(
                                             horizontal: 20),
                                         child: TextField(
                                           readOnly: isTextInputReadOnly,
@@ -535,23 +553,23 @@ class _PaintPageState extends State<PaintPage> {
                     )
                   : LeaderBoard(scoreboard, winner)
               : WaitingLobbyPage(
-                  occupancy: dataOfRoom['occupancy'],
-                  noOfPlayers: dataOfRoom['players'].length,
-                  lobbyName: dataOfRoom['name'],
-                  players: dataOfRoom['players'],
-                )
-          : Center(
+                occupancy: dataOfRoom['occupancy'],
+                noOfPlayers: dataOfRoom['players'].length,
+                lobbyName: dataOfRoom['name'],
+                players: dataOfRoom['players'],
+              )
+          : const Center(
               child: CircularProgressIndicator(),
             ),
       floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 30),
+        margin:const EdgeInsets.only(bottom: 30),
         child: FloatingActionButton(
           onPressed: () {},
           elevation: 7,
           backgroundColor: Colors.white,
           child: Text(
             '$_start',
-            style: TextStyle(fontSize: 22, color: Colors.black),
+            style:const TextStyle(fontSize: 22, color: Colors.black),
           ),
         ),
       ),

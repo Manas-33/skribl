@@ -117,7 +117,7 @@ io.on('connection',(socket)=>{
     })
 
     //change turn socket
-    socket.on('change-turn',async(name)=>{
+    socket.on('change-turn', async (name) => {
         try {
             let room = await Room.findOne({name});
             let idx = room.turnIndex;

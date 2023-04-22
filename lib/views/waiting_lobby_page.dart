@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:scribble/constants.dart';
 
 class WaitingLobbyPage extends StatefulWidget {
@@ -34,16 +33,16 @@ class _WaitingLobbyPageState extends State<WaitingLobbyPage> {
               height: size.height * 0.03,
             ),
             Padding(
-                padding: EdgeInsets.all(8),
+                padding:const EdgeInsets.all(12),
                 child: Text(
                   "Waiting for ${widget.occupancy - widget.noOfPlayers} players to join",
-                  style: TextStyle(color: Colors.white, fontSize: 30),
+                  style:const TextStyle(color: Colors.white, fontSize: 30),
                 )),
             SizedBox(
               height: size.height * 0.06,
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 55),
+              margin:const EdgeInsets.symmetric(horizontal: 55),
               child: Center(
                 child: TextField(
                   readOnly: true,
@@ -61,7 +60,7 @@ class _WaitingLobbyPageState extends State<WaitingLobbyPage> {
                               weight: 25,
                               color: Colors.blue[800],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 15,
                             ),
                             Text(
@@ -83,7 +82,7 @@ class _WaitingLobbyPageState extends State<WaitingLobbyPage> {
                     ));
                   },
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.touch_app),
+                    prefixIcon: const Icon(Icons.touch_app),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide: const BorderSide(color: Colors.transparent),
@@ -108,7 +107,7 @@ class _WaitingLobbyPageState extends State<WaitingLobbyPage> {
             SizedBox(
               height: size.height * 0.1,
             ),
-            Text(
+            const Text(
               'Players:',
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
@@ -121,12 +120,12 @@ class _WaitingLobbyPageState extends State<WaitingLobbyPage> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       leading: Text("${index + 1}",
-                          style: TextStyle(
+                          style:const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.bold)),
                       title: Text(widget.players[index]['nickname'],
-                          style: TextStyle(
+                          style:const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.bold)),

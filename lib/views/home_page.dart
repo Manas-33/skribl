@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:scribble/constants.dart';
 import 'package:scribble/views/create_room_page.dart';
 import 'package:scribble/views/join_room_page.dart';
 import 'package:scribble/views/widgets/custom_button.dart';

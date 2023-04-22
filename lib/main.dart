@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scribble/views/create_room_page.dart';
 import 'package:scribble/views/home_page.dart';
-import 'package:scribble/views/join_room_page.dart';
-import 'package:scribble/views/paint_page.dart';
-
 import 'constants.dart';
 
 void main() {
@@ -19,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme:
           ThemeData.light().copyWith(scaffoldBackgroundColor: backgroundColor),
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
+      home: const Scaffold(
         body: HomePage(),
       ),
     );
