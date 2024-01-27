@@ -70,14 +70,14 @@ class _PaintPageState extends State<PaintPage> {
   void renderTextBlank(String text) {
     textBlankWidget.clear();
     for (int i = 0; i < text.length; i++) {
-      textBlankWidget
-          .add(const Text('_', style:  TextStyle(fontSize: 30, color: Colors.white)));
+      textBlankWidget.add(
+          const Text('_', style: TextStyle(fontSize: 30, color: Colors.white)));
     }
   }
 
   // Socket.io client connection
   void connect() {
-    _socket = IO.io('http://192.168.1.6:3000', <String, dynamic>{
+    _socket = IO.io('http://192.168.1.7:3000', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false
     });
@@ -356,7 +356,7 @@ class _PaintPageState extends State<PaintPage> {
                                               child: SizedBox.expand(
                                                 child: ClipRRect(
                                                   borderRadius:
-                                                    const  BorderRadius.all(
+                                                      const BorderRadius.all(
                                                           Radius.circular(20)),
                                                   child: RepaintBoundary(
                                                     child: CustomPaint(
@@ -370,8 +370,9 @@ class _PaintPageState extends State<PaintPage> {
                                             )
                                           : SizedBox.expand(
                                               child: ClipRRect(
-                                                borderRadius: const BorderRadius.all(
-                                                    Radius.circular(20)),
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(20)),
                                                 child: RepaintBoundary(
                                                   child: CustomPaint(
                                                     size: Size.infinite,
@@ -390,7 +391,7 @@ class _PaintPageState extends State<PaintPage> {
                                         ? Row(
                                             children: [
                                               IconButton(
-                                                icon:const Icon(
+                                                icon: const Icon(
                                                   Icons.color_lens,
                                                   color: Colors.white,
                                                 ),
@@ -437,7 +438,7 @@ class _PaintPageState extends State<PaintPage> {
                                           )
                                         : Center(
                                             child: Text(dataOfRoom['word'],
-                                                style:const TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 30,
                                                     color: Colors.white))),
                                     Container(
@@ -452,7 +453,7 @@ class _PaintPageState extends State<PaintPage> {
                                           return ListTile(
                                             title: Text(
                                               msg.elementAt(0),
-                                              style:const TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.yellow,
                                                   fontSize: 19,
                                                   fontWeight: FontWeight.w600),
@@ -465,7 +466,7 @@ class _PaintPageState extends State<PaintPage> {
                                                 //   height: 3,
                                                 // ),
                                                 Text(msg.elementAt(1),
-                                                    style:const TextStyle(
+                                                    style: const TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 16,
                                                     )),
@@ -479,7 +480,7 @@ class _PaintPageState extends State<PaintPage> {
                                 ),
                                 SafeArea(
                                     child: IconButton(
-                                  icon:const Icon(Icons.menu_rounded,
+                                  icon: const Icon(Icons.menu_rounded,
                                       color: Colors.blue, size: 30),
                                   onPressed: () => {
                                     scaffoldKey.currentState!.openDrawer(),
@@ -495,7 +496,7 @@ class _PaintPageState extends State<PaintPage> {
                                         width: size.width,
                                         padding:
                                             const EdgeInsets.only(bottom: 10),
-                                        margin:const EdgeInsets.symmetric(
+                                        margin: const EdgeInsets.symmetric(
                                             horizontal: 20),
                                         child: TextField(
                                           readOnly: isTextInputReadOnly,
@@ -553,23 +554,23 @@ class _PaintPageState extends State<PaintPage> {
                     )
                   : LeaderBoard(scoreboard, winner)
               : WaitingLobbyPage(
-                occupancy: dataOfRoom['occupancy'],
-                noOfPlayers: dataOfRoom['players'].length,
-                lobbyName: dataOfRoom['name'],
-                players: dataOfRoom['players'],
-              )
+                  occupancy: dataOfRoom['occupancy'],
+                  noOfPlayers: dataOfRoom['players'].length,
+                  lobbyName: dataOfRoom['name'],
+                  players: dataOfRoom['players'],
+                )
           : const Center(
               child: CircularProgressIndicator(),
             ),
       floatingActionButton: Container(
-        margin:const EdgeInsets.only(bottom: 30),
+        margin: const EdgeInsets.only(bottom: 30),
         child: FloatingActionButton(
           onPressed: () {},
           elevation: 7,
           backgroundColor: Colors.white,
           child: Text(
             '$_start',
-            style:const TextStyle(fontSize: 22, color: Colors.black),
+            style: const TextStyle(fontSize: 22, color: Colors.black),
           ),
         ),
       ),
